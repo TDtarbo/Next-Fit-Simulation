@@ -1,0 +1,179 @@
+@import url("https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap");
+
+body {
+    font-family: "Poppins", serif;
+    padding: 50px;
+    color: #282828;
+}
+
+h1 {
+    text-align: center;
+}
+
+.mem-input-section {
+    flex: 1;
+}
+
+.job-input-section {
+    flex: 1;
+}
+
+input {
+    padding: 20px;
+    font-size: 18px;
+}
+
+.runBtn,
+.memBtn,
+.prosBtn {
+    padding: 20px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    color: white;
+    border: none;
+}
+
+.runBtn {
+    flex: 1;
+    background-color: rgb(0, 144, 188);
+}
+
+.memBtn,
+.prosBtn {
+    background-color: rgb(255, 94, 0);
+}
+
+.memory-blocks {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+.block {
+    display: flex;
+    flex-direction: column;
+    width: fit-content;
+    height: 150px;
+    border: 5px solid #ffffff;
+    position: relative;
+    overflow: hidden;
+}
+.block-header {
+    padding: 5px;
+    background-color: #f0f0f0;
+    font-size: 14px;
+    text-align: center;
+    border-bottom: 1px solid #ccc;
+}
+.block-content {
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    width: 600px;
+    color: black;
+}
+.process-section {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 12px;
+    border-right: 1px solid #fff;
+    transition: width 0.3s;
+}
+.free-section {
+    background-color: #d4f4d7;
+    color: #155724;
+
+    font-weight: 500;
+}
+.allocated-section {
+    background-color: #f4d7d7;
+    color: #721c24;
+
+    font-weight: 500;
+}
+.highlight {
+    border: 5px solid #dd0505;
+}
+.current-process {
+    background-color: #dd0505;
+    color: #fff;
+    font-weight: bold;
+}
+.controls {
+    display: flex;
+    align-items: flex-end;
+    gap: 20px;
+    margin-block: 80px;
+    padding: 30px;
+    border: 1px solid gray;
+}
+
+.sim {
+    display: flex;
+    flex-direction: row;
+    padding: 30px;
+    border: 1px solid gray;
+    margin-bottom: 80px;
+}
+
+.mem-section {
+    flex: 1;
+}
+
+.queue-section {
+    flex: 1;
+}
+
+.log {
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    max-height: 200px;
+    overflow-y: auto;
+    background-color: #000;
+    color: white;
+    font-family: "IBM Plex Mono", monospace;
+}
+.form {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+}
+.job-queue {
+    margin-top: 20px;
+}
+.job-queue ul {
+    list-style-type: none;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.job-queue li {
+    padding: 50px;
+    width: 500px;
+    background-color: #f0f0f0;
+    border: 1px solid #ccc;
+    display: inline-block;
+}
+.job-queue .unallocated {
+    background-color: #f8d7da;
+    color: #721c24;
+    font-weight: bold;
+}
+
+.job-queue .allocated {
+    background-color: #d4edda;
+    color: #155724;
+    font-weight: bold;
+}
+
+.job-queue .highlight {
+    background-color: #ffe699;
+}
