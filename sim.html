@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Next Fit Memory Allocation Simulation</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 20px;
+    }
+    .memory-blocks {
+      display: flex;
+      flex-direction: row;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .block {
+      display: flex;
+      flex-direction: column;
+      height: 150px;
+      border: 2px solid #000;
+      position: relative;
+      overflow: hidden;
+    }
+    .block-header {
+      padding: 5px;
+      background-color: #f0f0f0;
+      font-size: 14px;
+      text-align: center;
+      border-bottom: 1px solid #ccc;
+    }
+    .block-content {
+      position: relative;
+      height: 100%;
+      display: flex;
+      flex-direction: row;
+      width: 300px;
+    }
+    .process-section {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #fff;
+      font-size: 12px;
+      border-right: 1px solid #fff;
+      transition: width 0.3s;
+    }
+    .free-section {
+      background-color: #d4f4d7;
+    }
+    .allocated-section {
+      background-color: #f4d7d7;
+    }
+    .highlight {
+      border: 2px solid #ffe699;
+    }
+    .controls {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+    .log {
+      margin-top: 20px;
+      padding: 10px;
+      border: 1px solid #ccc;
+      max-height: 200px;
+      overflow-y: auto;
+    }
+    .form {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+    .job-queue {
+      margin-top: 20px;
+    }
+    .job-queue ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    .job-queue li {
+      padding: 5px;
+      margin: 5px 0;
+      background-color: #f0f0f0;
+      border: 1px solid #ccc;
+    }
+  </style>
+</head>
+<body>
+  <h1>Next Fit Memory Allocation Simulation</h1>
+
+  <div class="controls">
+    <h2>Memory Blocks</h2>
+    <div class="form">
+      <input type="number" id="block-size" placeholder="Enter block size (KB)" min="1" />
+      <button onclick="addBlock()">Add Block</button>
+    </div>
+
+    <h2>Processes</h2>
+    <div class="form">
+      <input type="number" id="process-size" placeholder="Enter process size (KB)" min="1" />
+      <button onclick="addProcess()">Add Process</button>
+    </div>
+
+    <button onclick="runSimulation()">Run Simulation</button>
+  </div>
+
+  <h2>Memory Blocks</h2>
+  <div class="memory-blocks" id="memory-blocks"></div>
+
+  <h2>Job Queue</h2>
+  <div class="job-queue">
+    <ul id="job-queue-list"></ul>
+  </div>
+
+  <h2>Log</h2>
+  <div class="log" id="log"></div>
+
+  <script>
+    const memoryBlocks = [];
+    const processes = [];
+    let pointer = 0;
+
+    function addBlock() {
+      const size = parseInt(document.getElementById('block-size').value, 10);
+      if (isNaN(size) || size <= 0) {
+        alert('Please enter a valid block size.');
+        return;
+      }
+
+      const block = {
+        id: memoryBlocks.length + 1,
+        size: size,
+        freeSize: size,
+        processes: []
+      };
+
+      memoryBlocks.push(block);
+      renderBlocks();
+      document.getElementById('block-size').value = '';
+    }
+
+    function addProcess() {
+      const size = parseInt(document.getElementById('process-size').value, 10);
+      if (isNaN(size) || size <= 0) {
+        alert('Please enter a valid process size.');
+        return;
+      }
+
+      const process = { id: processes.length + 1, size };
+      processes.push(process);
+
+      // Add process to the job queue list
+      const jobQueueList = document.getElementById('job-queue-list');
+      const jobItem = document.createElement('li');
+      jobItem.textContent = `Process ${process.id}: ${process.size} KB`;
+      jobQueueList.appendChild(jobItem);
+
+      const log = document.getElementById('log');
+      log.innerHTML += `<p>Process ${process.id} of size ${process.size} KB added to job queue.</p>`;
+
+      document.getElementById('process-size').value = '';
+    }
+
+    function renderBlocks() {
+      const container = document.getElementById('memory-blocks');
+      container.innerHTML = '';
+      memoryBlocks.forEach(block => {
+        const blockElement = document.createElement('div');
+        blockElement.classList.add('block');
+        blockElement.id = `block-${block.id}`;
+
+        const header = document.createElement('div');
+        header.classList.add('block-header');
+        header.textContent = `Block ${block.id}: ${block.size} KB`;
+
+        const content = document.createElement('div');
+        content.classList.add('block-content');
+
+        let usedSize = 0;
+        block.processes.forEach(process => {
+          const processElement = document.createElement('div');
+          processElement.classList.add('process-section', 'allocated-section');
+          const width = (process.size / block.size) * 100;
+          processElement.style.width = `${width}%`;
+          processElement.textContent = `P${process.id}: ${process.size} KB`;
+          usedSize += process.size;
+          content.appendChild(processElement);
+        });
+
+        const freeSize = block.size - usedSize;
+        if (freeSize > 0) {
+          const freeElement = document.createElement('div');
+          freeElement.classList.add('process-section', 'free-section');
+          const width = (freeSize / block.size) * 100;
+          freeElement.style.width = `${width}%`;
+          freeElement.textContent = `Free: ${freeSize} KB`;
+          content.appendChild(freeElement);
+        }
+
+        blockElement.appendChild(header);
+        blockElement.appendChild(content);
+        container.appendChild(blockElement);
+      });
+    }
+
+    async function runSimulation() {
+      const log = document.getElementById('log');
+      log.innerHTML += '<p>Starting simulation...</p>';
+
+      for (const process of processes) {
+        let allocated = false;
+
+        for (let i = 0; i < memoryBlocks.length; i++) {
+          const currentIndex = (pointer + i) % memoryBlocks.length;
+          const block = memoryBlocks[currentIndex];
+          const blockElement = document.getElementById(`block-${block.id}`);
+
+          // Highlight the block being checked
+          blockElement.classList.add('highlight');
+          log.innerHTML += `<p>Checking Block ${block.id} for Process ${process.id} of size ${process.size} KB...</p>`;
+          await delay(500);
+
+          if (block.freeSize >= process.size) {
+            block.processes.push(process);
+            block.freeSize -= process.size;
+
+            renderBlocks();
+
+            log.innerHTML += `<p>Process ${process.id} of size ${process.size} KB allocated to Block ${block.id}.</p>`;
+            pointer = (currentIndex + 1) % memoryBlocks.length;
+            blockElement.classList.remove('highlight');
+            allocated = true;
+
+            // Remove process from job queue
+            const jobQueueList = document.getElementById('job-queue-list');
+            const jobItems = jobQueueList.getElementsByTagName('li');
+            for (let item of jobItems) {
+              if (item.textContent.includes(`Process ${process.id}:`)) {
+                item.remove();
+                break;
+              }
+            }
+
+            break;
+          }
+
+          blockElement.classList.remove('highlight');
+        }
+
+        if (!allocated) {
+          log.innerHTML += `<p>Process ${process.id} of size ${process.size} KB could not be allocated.</p>`;
+        }
+      }
+
+      log.innerHTML += '<p>Simulation complete.</p>';
+    }
+
+    function delay(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+  </script>
+</body>
+</html>
